@@ -3,6 +3,10 @@
 import argparse
 import sys
 import numpy as np
+ 
+sys.path.insert(0, '..')
+sys.path.insert(0, '../..')
+sys.path.insert(0, '../../..')
 
 from utils.teacher import PurePursuitExpert
 from utils.env import launch_env
