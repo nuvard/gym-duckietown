@@ -16,6 +16,9 @@ from tqdm.notebook import tqdm
 sys.path.insert(0, '..')
 sys.path.insert(0, '../..')
 sys.path.insert(0, '../../..')
+from IPython import display as ipythondisplay
+import matplotlib.pyplot as plt
+from IPython import display as ipythondisplay
 
 import numpy as np
 import torch
@@ -52,10 +55,17 @@ def _train(args):
     # let's collect our samples
     for episode in range(0, args.episodes):
         print("Starting episode", episode)
+        i=0
         for steps in range(0, args.steps):
             # use our 'expert' to predict the next action.
             action = expert.predict(None)
             observation, reward, done, info = env.step(action)
+            if episode<2 and args.verbose=True:
+              prev_screen = env.render(mode='rgb_array')
+              plt.imshow(prev_screen)
+              plt.savefig(f"figs/expert/episode{episode}/Fig{i}.png")
+              i+=1
+            
             observations.append(observation)
             actions.append(action)
         env.reset()
@@ -106,6 +116,7 @@ if __name__ == '__main__':
     parser.add_argument("--batch-size", default=32, type=int, help="Training batch size")
     parser.add_argument("--epochs", default=1, type=int, help="Number of training epochs")
     parser.add_argument("--model-directory", default="models/", type=str, help="Where to save models")
+    parser.add_argument("--verbose", default=False, type=bool, help="Draw or not observations of teacher")
 
     args = parser.parse_args()
 
