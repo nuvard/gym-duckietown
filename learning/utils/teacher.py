@@ -22,7 +22,6 @@ class PurePursuitExpert:
 
         iterations = 0
         lookup_distance = self.following_distance * prev_vel
-        print(lookup_distance)
         curve_point = None
         while iterations < self.max_iterations:
             # Project a point ahead along the curve tangent,
@@ -51,8 +50,6 @@ class PurePursuitExpert:
           coeff /= np.linalg.norm(point_vec)*np.linalg.norm(prev_point_vec) 
           #print(coeff)
           prev_point_vec = 0.9 * prev_point_vec + 0.1 * point_vec
-          if coeff < 0.5:
-            vel /= 2
         else:
           prev_point_vec = point_vec
         velocity = (PurePursuitExpert.__get_speed_density_at(steering)

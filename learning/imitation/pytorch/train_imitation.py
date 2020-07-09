@@ -52,11 +52,10 @@ def _train(args):
 
     observations = []
     actions = []
-
+    observation = env.reset()
     # let's collect our samples
     for episode in range(0, args.episodes):
         print("Starting episode", episode)
-        observation = env.reset()
         vector = None
         velocity = 1
         for steps in range(0, args.steps):
@@ -71,7 +70,11 @@ def _train(args):
               break
             observations.append(observation)
             actions.append(action)
-        done = True    
+        else:
+          env.stats_recorder.save_complete()
+          env.stats_recorder.done = True
+        done = True
+        observation = env.reset()    
     env.close()
 
     actions = np.array(actions)
