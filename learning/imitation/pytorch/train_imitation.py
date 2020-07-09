@@ -56,19 +56,22 @@ def _train(args):
     # let's collect our samples
     for episode in range(0, args.episodes):
         print("Starting episode", episode)
-        env.reset()
+        observation = env.reset()
+        vector = None
+        velocity = 1
         for steps in range(0, args.steps):
             # use our 'expert' to predict the next action.
-            action = expert.predict(None)
+            action, vector = expert.predict(None, vector, velocity)
+            velocity = action[0]
             observation, reward, done, info = env.step(action)
             prev_screen = env.render(mode='rgb_array')
             if done:
               print("Episode finished after {} timesteps".format(steps+1))
-              env.reset()
+              observation = env.reset()
               break
             observations.append(observation)
             actions.append(action)
-        env.reset()
+        done = True    
     env.close()
 
     actions = np.array(actions)
