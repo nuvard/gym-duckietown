@@ -28,7 +28,7 @@ from utils.env import launch_env
 from utils.wrappers import NormalizeWrapper, ImgWrapper, \
     DtRewardWrapper, ActionWrapper, ResizeWrapper
 from utils.teacher import PurePursuitExpert
-
+from gym.wrappers import Monitor
 from imitation.pytorch.model import Model
 
 
@@ -41,6 +41,7 @@ def _train(args):
     env = ImgWrapper(env)
     env = ActionWrapper(env)
     env = DtRewardWrapper(env)
+    env = Monitor(env, directory='video', force=True)
     print("Initialized Wrappers")
 
     observation_shape = (None, ) + env.observation_space.shape
@@ -55,17 +56,16 @@ def _train(args):
     # let's collect our samples
     for episode in range(0, args.episodes):
         print("Starting episode", episode)
-        i=0
+        env.reset()
         for steps in range(0, args.steps):
             # use our 'expert' to predict the next action.
             action = expert.predict(None)
             observation, reward, done, info = env.step(action)
-            if episode<2 and args.verbose=True:
-              prev_screen = env.render(mode='rgb_array')
-              plt.imshow(prev_screen)
-              plt.savefig(f"figs/expert/episode{episode}/Fig{i}.png")
-              i+=1
-            
+            prev_screen = env.render(mode='rgb_array')
+            if done:
+              print("Episode finished after {} timesteps".format(steps+1))
+              env.reset()
+              break
             observations.append(observation)
             actions.append(action)
         env.reset()

@@ -4,8 +4,8 @@ import numpy as np
 import scipy.stats as stats
 
 # parameters for the pure pursuit controller
-PEAK_VELOCITY = 1.0
-GAIN = 8
+PEAK_VELOCITY = 0.3
+GAIN = 2
 FOLLOWING_DISTANCE = 0.5
 
 
