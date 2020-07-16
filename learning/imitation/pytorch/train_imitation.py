@@ -60,7 +60,7 @@ def _train(args):
         velocity = 1
         for steps in range(0, args.steps):
             # use our 'expert' to predict the next action.
-            action, vector = expert.predict(None, vector, velocity)
+            action = expert.predict(None)
             velocity = action[0]
             observation, reward, done, info = env.step(action)
             prev_screen = env.render(mode='rgb_array')
