@@ -28,6 +28,7 @@ from utils.env import launch_env
 from utils.wrappers import NormalizeWrapper, ImgWrapper, \
     DtRewardWrapper, ActionWrapper, ResizeWrapper
 from utils.teacher import PurePursuitExpert
+from utils.utils import compute_dist
 from gym.wrappers import Monitor
 from imitation.pytorch.model import Model
 
@@ -53,7 +54,9 @@ def _train(args):
     observations = []
     actions = []
     observation = env.reset()
+    nearest_points = []
     # let's collect our samples
+
     for episode in range(0, args.episodes):
         print("Starting episode", episode)
         vector = None
@@ -61,8 +64,10 @@ def _train(args):
         for steps in range(0, args.steps):
             # use our 'expert' to predict the next action.
             action = expert.predict(None)
+            nearest_points.append(env.closest_curve_point(env.cur_pos, env.cur_angle))
             velocity = action[0]
             observation, reward, done, info = env.step(action)
+
             prev_screen = env.render(mode='rgb_array')
             if done:
               print("Episode finished after {} timesteps".format(steps+1))

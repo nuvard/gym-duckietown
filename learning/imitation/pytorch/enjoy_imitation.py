@@ -26,7 +26,7 @@ from utils.wrappers import NormalizeWrapper, ImgWrapper, \
     DtRewardWrapper, ActionWrapper, ResizeWrapper
 from gym.wrappers import Monitor
 from utils.teacher import PurePursuitExpert
-
+from utils.utils import compute_dist
 
 from imitation.pytorch.model import Model
 
@@ -53,12 +53,14 @@ def _enjoy():
     env = Monitor(env, directory='model_video', force=True)
 
     obs = env.reset()
+    dists = []
     while True:
         obs = torch.from_numpy(obs).float().to(device).unsqueeze(0)
 
         action = model(obs)
         action = action.squeeze().data.cpu().numpy()
         obs, reward, done, info = env.step(action)
+        dists.append(compute_dist(env))
         prev_screen = env.render(mode='rgb_array')
         if done:
             if reward < 0:
@@ -67,6 +69,9 @@ def _enjoy():
                 
             obs = env.reset()
             env.render(mode='rgb_array')
+            with open('mean_distance.txt', 'a') as f:
+                string = f"Time: {time.time()} | Mean distance: {np.mean(dists)}\n"
+                f.write(string)
 
 def colab_enjoy():
   _enjoy()
