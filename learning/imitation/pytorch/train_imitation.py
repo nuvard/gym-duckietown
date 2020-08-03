@@ -64,7 +64,6 @@ def _train(args):
         for steps in range(0, args.steps):
             # use our 'expert' to predict the next action.
             action = expert.predict(None)
-            nearest_points.append(env.closest_curve_point(env.cur_pos, env.cur_angle))
             velocity = action[0]
             observation, reward, done, info = env.step(action)
 

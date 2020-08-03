@@ -26,7 +26,7 @@ from utils.wrappers import NormalizeWrapper, ImgWrapper, \
     DtRewardWrapper, ActionWrapper, ResizeWrapper
 from gym.wrappers import Monitor
 from utils.teacher import PurePursuitExpert
-from utils.utils import compute_dist
+from utils.utils import compute_dist,log_metrics
 
 from imitation.pytorch.model import Model
 
@@ -54,14 +54,18 @@ def _enjoy():
 
     obs = env.reset()
     dists = []
+    i = 0
     while True:
         obs = torch.from_numpy(obs).float().to(device).unsqueeze(0)
-
         action = model(obs)
         action = action.squeeze().data.cpu().numpy()
         obs, reward, done, info = env.step(action)
         dists.append(compute_dist(env))
         prev_screen = env.render(mode='rgb_array')
+        i+=1
+        if i%100 == 0:
+            log_metrics(dists)
+
         if done:
             if reward < 0:
                 print('*** FAILED ***')
